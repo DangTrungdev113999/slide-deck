@@ -83,7 +83,6 @@ export function Slide16Triangle({ active }: { active: boolean }) {
       intro.add(() => {
         const runLeg = (fromIdx: number) => {
           const toIdx = (fromIdx + 1) % 3;
-          const from = NODES[fromIdx];
           const to = NODES[toIdx];
 
           // glow at departure

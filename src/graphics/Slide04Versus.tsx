@@ -67,7 +67,7 @@ export function Slide04Versus({ active }: { active: boolean }) {
       // checklist ticking loop (cursor side)
       intro.add(() => {
         const tickLoop = gsap.timeline({ repeat: -1 });
-        checkTicks.forEach((tick, i) => {
+        checkTicks.forEach((tick: Element, i: number) => {
           tickLoop.to(tick, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, i * 0.8);
         });
         // hold all ticked

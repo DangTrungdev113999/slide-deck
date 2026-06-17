@@ -69,7 +69,6 @@ export function Slide17Closing({ active }: { active: boolean }) {
       // Comet pass
       if (rail) {
         intro.add(() => {
-          const len = rail.getTotalLength();
           gsap.to(rail, { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" });
           gsap.delayedCall(0.9, () => {
             gsap.set(comet, { opacity: 1 });

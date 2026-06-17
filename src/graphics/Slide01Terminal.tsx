@@ -16,7 +16,6 @@ const TOTAL_CHARS = PROMPT.length;
 
 export function Slide01Terminal({ active }: { active: boolean }) {
   const root = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
   const caretRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {

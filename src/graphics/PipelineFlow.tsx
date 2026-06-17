@@ -77,7 +77,7 @@ export function PipelineFlow({ active }: { active: boolean }) {
         );
 
         // node glow cascades — each fires as the comet reaches that node
-        glows.forEach((g, i) => {
+        glows.forEach((g: Element, i: number) => {
           const frac = (NODES[i].cx - IN_X) / (OUT_X - IN_X);
           gsap.to(g, {
             keyframes: [

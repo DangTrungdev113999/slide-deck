@@ -169,7 +169,7 @@ export function Slide10SubPlugin({ active }: { active: boolean }) {
       </div>
 
       {/* Lane progress bars */}
-      {LANES.map((lane, i) => (
+      {LANES.map((lane) => (
         <div key={lane.label} className="sa-bar" style={{
           position: "absolute", left: lane.x - 60, top: 155,
           width: 120, height: 70,
@@ -209,7 +209,7 @@ export function Slide10SubPlugin({ active }: { active: boolean }) {
       {/* ===== RIGHT: PLUGIN graphic ===== */}
       <div style={{ position: "absolute", left: RIGHT_OFFSET, top: 0, width: RIGHT_W, height: H }}>
         {/* Piece chips */}
-        {PIECES.map((p, i) => (
+        {PIECES.map((p) => (
           <div key={p.id} className="pl-piece" style={{
             position: "absolute",
             left: p.toX - 44,
