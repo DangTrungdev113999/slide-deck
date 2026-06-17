@@ -17,27 +17,29 @@ export function Slide({ kicker, active, children }: SlideProps) {
     const els = ref.current.querySelectorAll<HTMLElement>("[data-reveal]");
     if (!els.length) return;
 
-    // Kill previous timeline
-    tlRef.current?.kill();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(els, { opacity: 1, y: 0 });
-      return;
-    }
+    // gsap.context() scopes the tweens and lets ctx.revert() restore the
+    // ORIGINAL inline state on cleanup. This is what makes the reveal
+    // StrictMode-safe: without revert, gsap.from() leaves opacity:0 behind,
+    // and the second (StrictMode) effect run reads that 0 as its target —
+    // freezing the content invisible. revert() clears it so the rerun
+    // animates from 0 back to the real opacity:1.
+    const ctx = gsap.context(() => {
+      if (reduced) {
+        gsap.set(els, { opacity: 1, y: 0 });
+        return;
+      }
+      tlRef.current = gsap.timeline().from(els, {
+        opacity: 0,
+        y: 24,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: "power2.out",
+      });
+    }, ref);
 
-    const tl = gsap.timeline();
-    tl.from(els, {
-      opacity: 0,
-      y: 24,
-      duration: 0.5,
-      stagger: 0.08,
-      ease: "power2.out",
-    });
-    tlRef.current = tl;
-
-    return () => {
-      tl.kill();
-    };
+    return () => ctx.revert();
   }, [active]);
 
   return (
