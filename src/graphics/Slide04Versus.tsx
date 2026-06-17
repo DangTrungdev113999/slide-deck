@@ -23,6 +23,7 @@ const CLAUDE_ITEMS = [
 
 export function Slide04Versus({ active }: { active: boolean }) {
   const root = useRef<HTMLDivElement>(null);
+  const DIV_H = 360;
 
   useEffect(() => {
     if (!active || !root.current) return;
@@ -50,7 +51,7 @@ export function Slide04Versus({ active }: { active: boolean }) {
 
       gsap.set(leftCol, { opacity: 0, x: -80 });
       gsap.set(rightCol, { opacity: 0, x: 80 });
-      gsap.set(divider, { strokeDashoffset: 700 });
+      gsap.set(divider, { strokeDashoffset: DIV_H });
       gsap.set(checkBoxes, { opacity: 0 });
       gsap.set(checkTicks, { opacity: 0, scale: 0, transformOrigin: "50% 50%" });
       gsap.set(chatCursor, { opacity: 0 });
@@ -102,8 +103,6 @@ export function Slide04Versus({ active }: { active: boolean }) {
 
     return () => ctx.revert();
   }, [active]);
-
-  const DIV_H = 360;
 
   return (
     <div

@@ -92,9 +92,17 @@ export function Slide02Poll({ active }: { active: boolean }) {
       const spotlight = q(".s02-spotlight")[0];
       const note = q(".s02-note")[0];
 
+      // Set xPercent/yPercent so GSAP owns centering (not inline transform),
+      // otherwise GSAP x tweens clobber the translate(-50%,-50%).
+      gsap.set(spotlight, { xPercent: -50, yPercent: -50 });
+
       if (reduced) {
         gsap.set(cards, { opacity: 1, y: 0, scale: 1 });
         gsap.set([spotlight, note], { opacity: 1 });
+        // park spotlight on Claude Code card (first)
+        const totalW = TOOLS.length * (CARD_W + GAP) - GAP;
+        const startX = -totalW / 2 + CARD_W / 2;
+        gsap.set(spotlight, { x: startX });
         return;
       }
 
@@ -171,7 +179,6 @@ export function Slide02Poll({ active }: { active: boolean }) {
           boxShadow: "0 0 40px 10px rgba(0,113,227,0.12)",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%)`,
           pointerEvents: "none",
           zIndex: 1,
           // Initial x set by GSAP
