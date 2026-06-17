@@ -3,7 +3,7 @@ interface NavProps {
   onNext: () => void;
 }
 
-const btnStyle: React.CSSProperties = {
+const baseStyle: React.CSSProperties = {
   position: "absolute",
   bottom: "2.5rem",
   width: "3rem",
@@ -17,51 +17,52 @@ const btnStyle: React.CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   cursor: "pointer",
-  transition: "border-color 0.2s, color 0.2s, transform 0.2s, background 0.2s",
-  outline: "none",
+  transition: "border-color 0.2s, color 0.2s, transform 0.2s",
 };
+
+function lift(b: HTMLButtonElement) {
+  b.style.borderColor = "var(--accent)";
+  b.style.color = "var(--accent)";
+  b.style.transform = "scale(1.08)";
+}
+
+function reset(b: HTMLButtonElement) {
+  b.style.borderColor = "var(--line)";
+  b.style.color = "var(--ink)";
+  b.style.transform = "scale(1)";
+}
+
+function NavButton({
+  side,
+  label,
+  glyph,
+  onClick,
+}: {
+  side: "left" | "right";
+  label: string;
+  glyph: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      aria-label={label}
+      onClick={onClick}
+      style={{ ...baseStyle, [side]: "2.5rem" }}
+      onMouseEnter={(e) => lift(e.currentTarget)}
+      onMouseLeave={(e) => reset(e.currentTarget)}
+      onFocus={(e) => lift(e.currentTarget)}
+      onBlur={(e) => reset(e.currentTarget)}
+    >
+      {glyph}
+    </button>
+  );
+}
 
 export function Nav({ onPrev, onNext }: NavProps) {
   return (
     <>
-      <button
-        aria-label="Slide trước"
-        onClick={onPrev}
-        style={{ ...btnStyle, left: "2.5rem" }}
-        onMouseEnter={e => {
-          const b = e.currentTarget;
-          b.style.borderColor = "var(--accent)";
-          b.style.color = "var(--accent)";
-          b.style.transform = "scale(1.08)";
-        }}
-        onMouseLeave={e => {
-          const b = e.currentTarget;
-          b.style.borderColor = "var(--line)";
-          b.style.color = "var(--ink)";
-          b.style.transform = "scale(1)";
-        }}
-      >
-        ‹
-      </button>
-      <button
-        aria-label="Slide sau"
-        onClick={onNext}
-        style={{ ...btnStyle, right: "2.5rem" }}
-        onMouseEnter={e => {
-          const b = e.currentTarget;
-          b.style.borderColor = "var(--accent)";
-          b.style.color = "var(--accent)";
-          b.style.transform = "scale(1.08)";
-        }}
-        onMouseLeave={e => {
-          const b = e.currentTarget;
-          b.style.borderColor = "var(--line)";
-          b.style.color = "var(--ink)";
-          b.style.transform = "scale(1)";
-        }}
-      >
-        ›
-      </button>
+      <NavButton side="left" label="Slide trước" glyph="‹" onClick={onPrev} />
+      <NavButton side="right" label="Slide sau" glyph="›" onClick={onNext} />
     </>
   );
 }
