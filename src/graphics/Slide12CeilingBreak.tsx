@@ -252,7 +252,7 @@ export function Slide12CeilingBreak({ active }: { active: boolean }) {
         fontWeight: 700,
         color: "var(--muted)",
         lineHeight: 1.3,
-      }}>No context mgmt</div>
+      }}>Chỉ viết prompt</div>
       <div style={{
         position: "absolute",
         left: BAR_X2 - 90,
@@ -264,7 +264,7 @@ export function Slide12CeilingBreak({ active }: { active: boolean }) {
         fontWeight: 700,
         color: "var(--accent)",
         lineHeight: 1.3,
-      }}>Context engineering</div>
+      }}>Nạp đúng context</div>
     </div>
   );
 }

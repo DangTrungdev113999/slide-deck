@@ -44,10 +44,9 @@ export function Slide09({ active }: { active: boolean }) {
             margin: "0 0 28px",
             maxWidth: 580,
           }}>
-            Đóng gói rule lặp lại thành playbook.{" "}
-            <b style={{ color: "var(--ink)" }}>Skill</b> = cách Claude{" "}
-            <em style={{ fontStyle: "normal", color: "var(--accent)" }}>sequence</em> các MCP tool{" "}
-            <span style={{ color: "var(--muted)" }}>(MCP là plumbing)</span>.
+            Đóng gói quy trình mình hay lặp lại thành một{" "}
+            <b style={{ color: "var(--ink)" }}>playbook</b> sẵn — Claude cứ thế làm theo, khỏi dặn lại mỗi lần.{" "}
+            <span style={{ color: "var(--muted)" }}>Skill dạy Claude dùng tool nào, theo thứ tự nào.</span>
           </p>
         </div>
 

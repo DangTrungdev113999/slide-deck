@@ -8,14 +8,12 @@ export function Slide12({ active }: { active: boolean }) {
       <div style={{ marginTop: 28 }}>
         <span data-reveal style={TYPE.eyebrow}>Kỹ năng mới của dev</span>
         <h2 data-reveal style={{ ...TYPE.h2, fontSize: 66 }}>
-          Context engineering{" "}
-          <span style={{ color: "var(--muted)", fontWeight: 400 }}>—</span>{" "}
-          <span style={{ color: "var(--accent)" }}>trần kỹ năng mới</span>
+          Nạp đúng context{" "}
+          <span style={{ color: "var(--accent)" }}>&gt; viết prompt hay</span>
         </h2>
-        <p data-reveal style={{ ...TYPE.lead, maxWidth: 860 }}>
-          Most devs{" "}
-          <span style={{ color: "var(--ink)", fontWeight: 700 }}>describe → react → fix → repeat</span>{" "}
-          và chạm trần. Edge là quản lý context, không phải prompting.
+        <p data-reveal style={{ ...TYPE.lead, maxWidth: 920 }}>
+          Đa số dev chỉ: <b style={{ color: "var(--ink)" }}>tả yêu cầu → AI nhả code → sửa → lặp lại</b>, nên nhanh chạm "trần". Người giỏi hơn biết{" "}
+          <b style={{ color: "var(--accent)" }}>nạp đúng bối cảnh cho AI</b> (file liên quan, convention, mục tiêu) — đó mới là kỹ năng, không phải gồng prompt cho kêu.
         </p>
       </div>
 
@@ -66,7 +64,7 @@ export function Slide12({ active }: { active: boolean }) {
             color: "var(--ink-soft)",
             margin: 0,
           }}>
-            the workflow has a ceiling, and most devs hit it fast — the AI has no idea what you actually want.
+            Cách làm việc kiểu đó có một cái trần, và đa số dev chạm rất nhanh — vì AI chẳng hề biết bạn thực sự muốn gì.
           </p>
 
           <p style={{

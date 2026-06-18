@@ -20,8 +20,6 @@ export function Slide01({ active }: { active: boolean }) {
         {/* lead */}
         <p data-reveal style={{ ...TYPE.lead, marginTop: 20, maxWidth: 860 }}>
           Bào AI sao cho hiệu quả —{" "}
-          <strong style={{ color: "var(--ink)" }}>Trung 99</strong>
-          {" · "}
           <span style={{ color: "var(--accent)", fontWeight: 700 }}>ATX × Finpath</span>
         </p>
       </div>
