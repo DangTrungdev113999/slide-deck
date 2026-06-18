@@ -54,7 +54,7 @@ export function Slide14({ active }: { active: boolean }) {
             AI for Frontend
           </span>
           <span data-reveal style={{ fontFamily: "var(--font-display,'Inter'),sans-serif", fontWeight: 800, fontSize: 17, color: "var(--muted)" }}>
-            <span style={{ color: "var(--ink)" }}>14</span> / 17
+            <span style={{ color: "var(--ink)" }}>14</span> / 16
           </span>
         </div>
 

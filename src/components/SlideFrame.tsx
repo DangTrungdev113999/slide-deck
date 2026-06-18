@@ -66,7 +66,7 @@ export function SlideFrame({
             {kicker}
           </span>
           <span data-reveal style={{ fontFamily: "var(--font-display,'Inter'),sans-serif", fontWeight: 800, fontSize: 17, color: "var(--muted)" }}>
-            <span style={{ color: "var(--ink)" }}>{String(index).padStart(2, "0")}</span> / 17
+            <span style={{ color: "var(--ink)" }}>{String(index).padStart(2, "0")}</span> / 16
           </span>
         </div>
         {/* body */}

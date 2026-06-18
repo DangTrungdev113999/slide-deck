@@ -3,7 +3,7 @@ import { Slide13Split } from "../graphics/Slide13Split";
 
 export function Slide13({ active }: { active: boolean }) {
   return (
-    <SlideFrame index={13} kicker="Frontend" active={active}>
+    <SlideFrame index={12} kicker="Frontend" active={active}>
       {/* Headline */}
       <div style={{ marginTop: 40 }}>
         <span data-reveal style={TYPE.eyebrow}>AI for Frontend</span>

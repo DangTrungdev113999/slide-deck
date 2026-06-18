@@ -3,7 +3,7 @@ import { Slide15Toggle } from "../graphics/Slide15Toggle";
 
 export function Slide15({ active }: { active: boolean }) {
   return (
-    <SlideFrame index={15} kicker="UI" active={active}>
+    <SlideFrame index={13} kicker="UI" active={active}>
       {/* Headline */}
       <div style={{ marginTop: 40 }}>
         <span data-reveal style={TYPE.eyebrow}>Design approach</span>

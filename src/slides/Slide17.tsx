@@ -1,59 +1,48 @@
 import { SlideFrame, TYPE } from "../components/SlideFrame";
-import { Slide17Closing } from "../graphics/Slide17Closing";
+import { PhaseFlow } from "../graphics/PhaseFlow";
+
+const PHASES = [
+  { label: "Kịch bản", sub: "tách scene" },
+  { label: "Config", sub: "voice · BGM · brand" },
+  { label: "Scene agents", sub: "song song / scene" },
+  { label: "Ráp + TTS", sub: "giọng đọc + nhạc" },
+  { label: "Tự review", sub: "soi & auto-fix" },
+  { label: "Render", sub: "MP4 + thumbnail" },
+];
 
 export function Slide17({ active }: { active: boolean }) {
   return (
-    <SlideFrame index={17} kicker="Kết" active={active}>
-      {/* Headline — big closing statement */}
-      <div style={{ marginTop: 36 }}>
-        <h1
-          data-reveal
-          style={{
-            ...TYPE.h1,
-            fontSize: 116,
-            lineHeight: 0.95,
-            letterSpacing: "-0.045em",
-          }}
-        >
-          <span style={{ color: "var(--accent)" }}>Workflow</span>
-          {" "}
-          <span style={{ color: "var(--ink)" }}>&gt; Model</span>
-        </h1>
-        <p data-reveal style={{ ...TYPE.lead, maxWidth: 1050, marginTop: 26 }}>
-          Chọn agent theo <b style={{ color: "var(--ink)" }}>SHAPE của task</b>, không theo leaderboard.{" "}
-          <b style={{ color: "var(--ink)" }}>Codex</b>: tự chủ, cần guidance.{" "}
-          <b style={{ color: "var(--ink)" }}>Claude Code</b>: tương tác, theo intent.
-          {" "}Rồi test + tinh chỉnh.
+    <SlideFrame index={16} kicker="Demo · Pipeline 2" active={active}>
+      <div style={{ marginTop: 30 }}>
+        <span data-reveal style={TYPE.eyebrow}>Demo trực tiếp</span>
+        <h2 data-reveal style={{ ...TYPE.h2, fontSize: 58, display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          Gen video tài chính
+          <code
+            style={{
+              fontFamily: "ui-monospace,'SF Mono',Menlo,monospace",
+              fontSize: 30,
+              fontWeight: 700,
+              color: "var(--accent)",
+              background: "rgba(0,113,227,.08)",
+              border: "1px solid rgba(0,113,227,.2)",
+              borderRadius: 12,
+              padding: "6px 16px",
+            }}
+          >
+            /gen-video-tai-chinh
+          </code>
+        </h2>
+        <p data-reveal style={{ ...TYPE.lead, maxWidth: 1100 }}>
+          Từ <b style={{ color: "var(--ink)" }}>kịch bản</b> → video tài chính hoàn chỉnh (giọng đọc + nhạc + thumbnail). Mỗi scene là <b style={{ color: "var(--accent)" }}>1 component Remotion riêng</b>, animation khớp lời đọc — chạy end-to-end, tự fix bug.
         </p>
       </div>
 
-      {/* Graphic */}
-      <div data-reveal style={{ marginTop: "auto", marginBottom: 0 }}>
-        <Slide17Closing active={active} />
+      <div data-reveal style={{ marginTop: "auto", marginBottom: 24 }}>
+        <PhaseFlow active={active} phases={PHASES} />
       </div>
 
-      {/* Closing line */}
-      <div
-        data-reveal
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          paddingBottom: 0,
-          paddingTop: 12,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-body,'Be Vietnam Pro'),sans-serif",
-            fontSize: 22,
-            fontWeight: 500,
-            color: "var(--muted)",
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-          }}
-        >
-          Cảm ơn · Q&amp;A
-        </span>
+      <div data-reveal style={{ textAlign: "center", marginBottom: 8, fontFamily: "var(--font-display,'Inter'),sans-serif", fontWeight: 700, fontSize: 16, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--muted)" }}>
+        Cảm ơn · Q&amp;A
       </div>
     </SlideFrame>
   );
