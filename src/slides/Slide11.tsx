@@ -4,8 +4,8 @@ import { Slide11ContextBar } from "../graphics/Slide11ContextBar";
 export function Slide11({ active }: { active: boolean }) {
   return (
     <SlideFrame index={11} kicker="Context" active={active}>
-      {/* headline */}
-      <div style={{ marginTop: 32 }}>
+      {/* headline block */}
+      <div style={{ marginTop: 24 }}>
         <span data-reveal style={TYPE.eyebrow}>Tối ưu context</span>
         <h2 data-reveal style={TYPE.h2}>
           1M{" "}
@@ -16,22 +16,27 @@ export function Slide11({ active }: { active: boolean }) {
           }}>≠</span>{" "}
           <span style={{ color: "var(--accent)" }}>free lunch</span>
         </h2>
-        <p data-reveal style={{ ...TYPE.lead, maxWidth: 900 }}>
-          <b style={{ color: "var(--accent)" }}>200K</b> là vùng ngon. Quá tay dễ ngu đi{" "}
+        <p data-reveal style={{ ...TYPE.lead, maxWidth: 860 }}>
+          Nhét đầy 1M context không có nghĩa là model sẽ thông minh hơn.{" "}
+          <b style={{ color: "var(--accent)" }}>200K</b> là vùng ngọt — quá tay thì{" "}
+          <span style={{ color: "var(--danger)", fontWeight: 700 }}>context rot</span>:{" "}
+          mô hình bắt đầu quên, lẫn, và suy luận kém đi.{" "}
+          Dùng{" "}
           <code style={{
             fontFamily: "ui-monospace,'SF Mono',Menlo,monospace",
-            fontSize: 22,
+            fontSize: 24,
             background: "var(--surface)",
             border: "1px solid var(--line)",
             borderRadius: 8,
-            padding: "2px 8px",
+            padding: "2px 9px",
             color: "var(--ink)",
-          }}>/compact</code>, có khi ép về 200K cho chắc.
+          }}>/compact</code>{" "}
+          để ép ngược về 200K.
         </p>
       </div>
 
-      {/* animated graphic */}
-      <div data-reveal style={{ marginTop: "auto", marginBottom: 8 }}>
+      {/* animated graphic — fills bottom zone */}
+      <div data-reveal style={{ marginTop: 28 }}>
         <Slide11ContextBar active={active} />
       </div>
     </SlideFrame>

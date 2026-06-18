@@ -4,6 +4,7 @@ import { Nav } from "./components/Nav";
 import { Progress } from "./components/Progress";
 import { useDeck } from "./hooks/useDeck";
 import { SLIDES } from "./slides/index";
+import { SlideNoContext } from "./components/SlideNoContext";
 
 // Outgoing fade transition duration (ms)
 const FADE_MS = 200;
@@ -40,7 +41,9 @@ export function Deck() {
           transition: `opacity ${FADE_MS}ms ease`,
         }}
       >
-        <Comp active={!fading} />
+        <SlideNoContext.Provider value={{ no: displayIndex + 1, total: SLIDES.length }}>
+          <Comp active={!fading} />
+        </SlideNoContext.Provider>
       </div>
       <Nav onPrev={prev} onNext={next} />
       <Progress index={index} total={SLIDES.length} />

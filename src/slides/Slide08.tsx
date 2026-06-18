@@ -4,23 +4,32 @@ import { Slide08Radial } from "../graphics/Slide08Radial";
 export function Slide08({ active }: { active: boolean }) {
   return (
     <SlideFrame index={8} kicker="Harness" active={active}>
-      {/* headline block */}
-      <div style={{ marginTop: 40 }}>
+      {/* Headline block — compact so diagram fills the lower zone */}
+      <div style={{ marginTop: 32 }}>
         <span data-reveal style={TYPE.eyebrow}>
           Kiến trúc Agent
         </span>
-        <h2 data-reveal style={{ ...TYPE.h2 }}>
+        <h2 data-reveal style={{ ...TYPE.h2, marginTop: 8 }}>
           Tay chân của{" "}
           <span style={{ color: "var(--accent)" }}>Agent</span>
         </h2>
-        <p data-reveal style={{ ...TYPE.lead, marginTop: 16, maxWidth: 900 }}>
-          Harness kết nối 9 lớp năng lực: từ memory đến MCP,
+        <p data-reveal style={{ ...TYPE.lead, marginTop: 14, maxWidth: 860 }}>
+          Harness kết nối 9 lớp năng lực — từ memory đến MCP,
           mọi thứ phối hợp qua một Agent duy nhất.
         </p>
       </div>
 
-      {/* hero radial diagram */}
-      <div data-reveal style={{ marginTop: "auto", marginBottom: 0 }}>
+      {/* Hero radial diagram — fills the lower 56% of the slide */}
+      <div
+        data-reveal
+        style={{
+          marginTop: "auto",
+          marginBottom: -8,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Slide08Radial active={active} />
       </div>
     </SlideFrame>

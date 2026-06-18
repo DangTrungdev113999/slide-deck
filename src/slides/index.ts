@@ -3,7 +3,6 @@ import { Slide01 } from "./Slide01";
 import { Slide02 } from "./Slide02";
 import { Slide03 } from "./Slide03";
 import { Slide04 } from "./Slide04";
-import { Slide05 } from "./Slide05";
 import { Slide06 } from "./Slide06";
 import { Slide07 } from "./Slide07";
 import { Slide08 } from "./Slide08";
@@ -26,7 +25,6 @@ export const SLIDES: SlideEntry[] = [
   { id: "poll", Comp: Slide02 },
   { id: "journey", Comp: Slide03 },
   { id: "cursor-vs-claude", Comp: Slide04 },
-  { id: "prompts-speed", Comp: Slide05 },
   { id: "antigravity", Comp: Slide06 },
   { id: "non-linear", Comp: Slide07 },
   { id: "harness", Comp: Slide08 },

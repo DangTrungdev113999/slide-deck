@@ -1,6 +1,7 @@
 import { useEffect, useRef, ReactNode } from "react";
 import gsap from "gsap";
 import { Atmosphere } from "./Atmosphere";
+import { useSlideNo } from "./SlideNoContext";
 
 /**
  * SlideFrame — the canonical frame every slide (except the bespoke hero #14)
@@ -15,17 +16,18 @@ import { Atmosphere } from "./Atmosphere";
  * sustain loops keyed on `active` (see PipelineFlow for the reference pattern).
  */
 export function SlideFrame({
-  index,
   kicker,
   active,
   children,
 }: {
-  index: number;
+  /** @deprecated numbering now derives from registry position via SlideNoContext */
+  index?: number;
   kicker: string;
   active: boolean;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const { no, total } = useSlideNo();
 
   useEffect(() => {
     if (!active || !ref.current) return;
@@ -66,7 +68,7 @@ export function SlideFrame({
             {kicker}
           </span>
           <span data-reveal style={{ fontFamily: "var(--font-display,'Inter'),sans-serif", fontWeight: 800, fontSize: 17, color: "var(--muted)" }}>
-            <span style={{ color: "var(--ink)" }}>{String(index).padStart(2, "0")}</span> / 16
+            <span style={{ color: "var(--ink)" }}>{String(no).padStart(2, "0")}</span> / {total}
           </span>
         </div>
         {/* body */}

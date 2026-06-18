@@ -5,89 +5,101 @@ export function Slide10({ active }: { active: boolean }) {
   return (
     <SlideFrame index={10} kicker="Subagent · Plugin" active={active}>
       {/* Headline */}
-      <div style={{ marginTop: 32 }}>
+      <div style={{ marginTop: 28 }}>
         <h2 data-reveal style={{ ...TYPE.h2, margin: 0 }}>
           <span style={{ color: "var(--accent)" }}>Chạy song song</span>{" "}
           <span style={{ color: "var(--muted)", fontWeight: 400 }}>·</span>{" "}
-          <span style={{ color: "#9b59b6" }}>Đóng gói</span>
+          <span style={{ color: "var(--ink)" }}>Đóng gói</span>
         </h2>
       </div>
 
-      {/* Two-zone layout */}
-      <div data-reveal style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1px 1fr",
-        gap: 0,
-        marginTop: 36,
-        flex: 1,
-      }}>
-        {/* ---- LEFT: SUBAGENT ---- */}
-        <div style={{ paddingRight: 48 }}>
-          <span style={{
-            display: "inline-block",
-            fontFamily: "var(--font-display,'Inter'),sans-serif",
-            fontWeight: 800,
-            fontSize: 13,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            color: "var(--accent)",
-            background: "rgba(0,113,227,.08)",
-            padding: "4px 12px",
-            borderRadius: 8,
-            marginBottom: 16,
-          }}>Subagent</span>
-          <p style={{
-            fontFamily: "var(--font-body,'Be Vietnam Pro'),sans-serif",
-            fontSize: 24,
-            lineHeight: 1.5,
-            color: "var(--ink-soft)",
-            margin: 0,
-            maxWidth: 580,
-          }}>
+      {/* Two-zone descriptor row */}
+      <div
+        data-reveal
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1px 1fr",
+          gap: 0,
+          marginTop: 28,
+        }}
+      >
+        {/* LEFT: SUBAGENT descriptor */}
+        <div style={{ paddingRight: 52 }}>
+          <span
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-display,'Inter'),sans-serif",
+              fontWeight: 800,
+              fontSize: 20,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase" as const,
+              color: "var(--accent)",
+              background: "var(--accent-soft)",
+              padding: "5px 14px",
+              borderRadius: 9,
+              marginBottom: 14,
+            }}
+          >
+            Subagent
+          </span>
+          <p
+            style={{
+              fontFamily: "var(--font-body,'Be Vietnam Pro'),sans-serif",
+              fontSize: 26,
+              lineHeight: 1.45,
+              color: "var(--ink-soft)",
+              margin: 0,
+            }}
+          >
             Spawn nhiều subagent chạy{" "}
-            <b style={{ color: "var(--accent)" }}>SONG SONG</b>,
-            tránh loãng context ở hội thoại chính.
+            <b style={{ color: "var(--accent)" }}>SONG SONG</b> — tránh loãng
+            context ở hội thoại chính.
           </p>
         </div>
 
         {/* Divider */}
-        <div style={{ background: "var(--line)", margin: "0 0 40px" }} />
+        <div style={{ background: "var(--line)", margin: "0 0 24px" }} />
 
-        {/* ---- RIGHT: PLUGIN ---- */}
-        <div style={{ paddingLeft: 48 }}>
-          <span style={{
-            display: "inline-block",
-            fontFamily: "var(--font-display,'Inter'),sans-serif",
-            fontWeight: 800,
-            fontSize: 13,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            color: "#9b59b6",
-            background: "rgba(155,89,182,.09)",
-            padding: "4px 12px",
-            borderRadius: 8,
-            marginBottom: 16,
-          }}>Plugin</span>
-          <p style={{
-            fontFamily: "var(--font-body,'Be Vietnam Pro'),sans-serif",
-            fontSize: 24,
-            lineHeight: 1.5,
-            color: "var(--ink-soft)",
-            margin: 0,
-            maxWidth: 580,
-          }}>
+        {/* RIGHT: PLUGIN descriptor */}
+        <div style={{ paddingLeft: 52 }}>
+          <span
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-display,'Inter'),sans-serif",
+              fontWeight: 800,
+              fontSize: 20,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase" as const,
+              color: "var(--accent-700)",
+              background: "rgba(0,88,176,.08)",
+              padding: "5px 14px",
+              borderRadius: 9,
+              marginBottom: 14,
+            }}
+          >
+            Plugin
+          </span>
+          <p
+            style={{
+              fontFamily: "var(--font-body,'Be Vietnam Pro'),sans-serif",
+              fontSize: 26,
+              lineHeight: 1.45,
+              color: "var(--ink-soft)",
+              margin: 0,
+            }}
+          >
             Bundle ={" "}
             <span style={{ color: "var(--accent)" }}>skills</span> +{" "}
             <span style={{ color: "var(--danger)" }}>hooks</span> +{" "}
-            <span style={{ color: "#34a853" }}>MCP</span> +{" "}
-            <span style={{ color: "#9b59b6" }}>subagents</span>,
-            chạy chéo Claude / Codex / Antigravity.
+            <span style={{ color: "var(--ink)" }}>MCP</span> +{" "}
+            <span style={{ color: "var(--accent-700)" }}>subagents</span>, chạy
+            chéo Claude / Codex / Antigravity.
           </p>
         </div>
       </div>
 
-      {/* Motion graphic */}
-      <div data-reveal style={{ marginTop: "auto", paddingBottom: 8 }}>
+      {/* Motion graphic — fills lower zone */}
+      <div data-reveal style={{ marginTop: "auto", paddingBottom: 0 }}>
         <Slide10SubPlugin active={active} />
       </div>
     </SlideFrame>

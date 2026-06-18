@@ -2,51 +2,105 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 /**
- * Slide15Toggle — two-column motion graphic.
- * LEFT: organic free shapes drifting / morphing (Free-style)
- * RIGHT: elements snapping to a strict grid (Design System)
- * A toggle divider pulses between them.
+ * Slide15Toggle — "Free-style vs Design System" motion graphic.
+ *
+ * LEFT HALF: Organic creative zone — blobs drift/morph, representing
+ *   "no design → AI uses taste + intuition to compose freely".
+ *   Labels: Taste, Cảm quan, Composition, Bố cục, Tương phản — at ≥22px.
+ *
+ * RIGHT HALF: Token grid zone — UI components snap to a strict baseline grid,
+ *   highlighted one-by-one in a cycling sweep (like a linter checking each token).
+ *   Token var labels at ≥20px, item names at ≥22px.
+ *
+ * CENTER: A vertical divider draws on, with a "VS" badge that pulses.
+ *
+ * Motion pattern: gsap.context((self) => { ... }, ref) + return () => ctx.revert()
+ * — StrictMode-safe. Reduced-motion: all visible, no animation.
  */
 
-const W = 1540;
-const H = 400;
-const CX = W / 2;
+const W = 1680;
+const H = 480;
+const CX = W / 2; // 840
 
-// Free-style blobs (left side) — irregular polygons that drift/morph
-const BLOBS = [
-  { x: 120, y: 120, rx: 90, ry: 70, rotate: 12, color: "rgba(0,113,227,0.15)" },
-  { x: 310, y: 200, rx: 120, ry: 80, rotate: -18, color: "rgba(10,132,255,0.10)" },
-  { x: 180, y: 300, rx: 80, ry: 60, rotate: 30, color: "rgba(0,88,176,0.12)" },
-  { x: 450, y: 130, rx: 70, ry: 90, rotate: -5, color: "rgba(0,113,227,0.08)" },
-  { x: 420, y: 310, rx: 100, ry: 65, rotate: 22, color: "rgba(10,132,255,0.13)" },
+// ─── LEFT: organic blobs ───────────────────────────────────────────────────
+interface Blob {
+  cx: number; cy: number; rx: number; ry: number;
+  rotate: number; fill: string; stroke: string;
+}
+const BLOBS: Blob[] = [
+  { cx: 110, cy: 115, rx: 96,  ry: 74,  rotate: 14,  fill: "rgba(0,113,227,0.12)", stroke: "rgba(0,113,227,0.28)" },
+  { cx: 300, cy: 190, rx: 130, ry: 85,  rotate: -22, fill: "rgba(10,132,255,0.09)", stroke: "rgba(10,132,255,0.22)" },
+  { cx: 170, cy: 330, rx: 88,  ry: 68,  rotate: 36,  fill: "rgba(0,88,176,0.10)",   stroke: "rgba(0,88,176,0.20)" },
+  { cx: 480, cy: 140, rx: 75,  ry: 95,  rotate: -8,  fill: "rgba(0,113,227,0.08)",  stroke: "rgba(0,113,227,0.18)" },
+  { cx: 450, cy: 340, rx: 108, ry: 68,  rotate: 26,  fill: "rgba(10,132,255,0.11)", stroke: "rgba(10,132,255,0.25)" },
+  { cx: 620, cy: 240, rx: 70,  ry: 58,  rotate: -14, fill: "rgba(0,113,227,0.07)",  stroke: "rgba(0,113,227,0.16)" },
+];
+// small accent circles
+const ACCENT_CIRCLES = [
+  { cx: 255, cy: 165, r: 30 },
+  { cx: 395, cy: 285, r: 22 },
+  { cx: 570, cy: 155, r: 18 },
+  { cx: 130, cy: 390, r: 16 },
+];
+// floating labels (left side — representing free-style principles)
+interface FloatLabel { x: number; y: number; text: string; size: number; weight: number; alpha: number }
+const FLOAT_LABELS: FloatLabel[] = [
+  { x: 60,  y: 82,  text: "Taste",       size: 28, weight: 800, alpha: 0.80 },
+  { x: 220, y: 145, text: "Composition", size: 24, weight: 700, alpha: 0.65 },
+  { x: 100, y: 270, text: "Cảm quan",    size: 26, weight: 800, alpha: 0.72 },
+  { x: 380, y: 195, text: "Tương phản",  size: 22, weight: 700, alpha: 0.55 },
+  { x: 310, y: 350, text: "Bố cục",      size: 26, weight: 800, alpha: 0.68 },
+  { x: 530, y: 100,  text: "Rhythm",      size: 22, weight: 700, alpha: 0.50 },
+  { x: 500, y: 400, text: "Harmony",     size: 22, weight: 700, alpha: 0.50 },
 ];
 
-// Design System tokens grid (right side) — elements that snap to perfect positions
-interface GridItem { col: number; row: number; variant: "rect" | "sq" | "pill" }
-const GRID_ITEMS: GridItem[] = [
-  { col: 0, row: 0, variant: "pill" },
-  { col: 1, row: 0, variant: "rect" },
-  { col: 2, row: 0, variant: "sq" },
-  { col: 0, row: 1, variant: "rect" },
-  { col: 1, row: 1, variant: "sq" },
-  { col: 2, row: 1, variant: "pill" },
-  { col: 0, row: 2, variant: "sq" },
-  { col: 1, row: 2, variant: "rect" },
-  { col: 2, row: 2, variant: "sq" },
-];
-const GRID_X0 = CX + 70;
-const GRID_COL_W = 148;
-const GRID_ROW_H = 110;
-const GRID_Y0 = 55;
+// ─── RIGHT: token grid ─────────────────────────────────────────────────────
+const GX0 = CX + 60;   // grid left edge
+const GY0 = 32;         // grid top
+const COL_W = 190;      // col stride
+const ROW_H = 120;      // row stride
+const COLS = 3;
+const ROWS = 4;
 
-function gridItemBounds(item: GridItem) {
-  const x = GRID_X0 + item.col * GRID_COL_W;
-  const y = GRID_Y0 + item.row * GRID_ROW_H;
-  const w = item.variant === "sq" ? 100 : item.variant === "pill" ? 120 : 130;
-  const h = item.variant === "sq" ? 70 : item.variant === "pill" ? 44 : 70;
-  const r = item.variant === "pill" ? 22 : 14;
+interface GridCell {
+  col: number; row: number;
+  label: string;          // component name ≥22px
+  token: string;          // CSS var shown below ≥20px
+  variant: "rect" | "pill" | "sq" | "wide";
+  isAccent?: boolean;
+}
+const GRID_CELLS: GridCell[] = [
+  { col: 0, row: 0, label: "Button",   token: "--radius",       variant: "pill",  isAccent: true  },
+  { col: 1, row: 0, label: "Card",     token: "--shadow-md",    variant: "rect"                   },
+  { col: 2, row: 0, label: "Badge",    token: "--accent",       variant: "sq",    isAccent: true  },
+  { col: 0, row: 1, label: "Input",    token: "--line",         variant: "wide"                   },
+  { col: 1, row: 1, label: "Chip",     token: "--surface",      variant: "pill",  isAccent: false },
+  { col: 2, row: 1, label: "Divider",  token: "--line-soft",    variant: "sq"                     },
+  { col: 0, row: 2, label: "Tag",      token: "--ink-soft",     variant: "pill",  isAccent: true  },
+  { col: 1, row: 2, label: "Icon",     token: "--accent-700",   variant: "sq",    isAccent: true  },
+  { col: 2, row: 2, label: "Avatar",   token: "--radius",       variant: "rect"                   },
+  { col: 0, row: 3, label: "Tooltip",  token: "--shadow-lg",    variant: "rect"                   },
+  { col: 1, row: 3, label: "Modal",    token: "--bg",           variant: "wide",  isAccent: false },
+  { col: 2, row: 3, label: "Switch",   token: "--accent-soft",  variant: "pill",  isAccent: true  },
+];
+
+function cellGeom(cell: GridCell) {
+  const x = GX0 + cell.col * COL_W;
+  const y = GY0 + cell.row * ROW_H;
+  const w = cell.variant === "wide" ? 172 : cell.variant === "sq" ? 108 : 148;
+  const h = cell.variant === "sq" ? 90 : 74;
+  const r = cell.variant === "pill" ? 31 : 14;
   return { x, y, w, h, r };
 }
+
+// Snap guide lines (right half, horizontal and vertical)
+const SNAP_H: Array<{ y: number }> = Array.from({ length: ROWS + 1 }, (_, i) => ({ y: GY0 + i * ROW_H - 16 }));
+const SNAP_V: Array<{ x: number }> = Array.from({ length: COLS + 1 }, (_, i) => ({ x: GX0 + i * COL_W - 10 }));
+
+// Right-side token strip at bottom
+const TOKEN_STRIP = [
+  "--color-primary", "--spacing-base", "--radius-md", "--font-display",
+];
 
 export function Slide15Toggle({ active }: { active: boolean }) {
   const root = useRef<HTMLDivElement>(null);
@@ -56,112 +110,124 @@ export function Slide15Toggle({ active }: { active: boolean }) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context((self) => {
-      const q = (s: string) => self.selector!(s) as Element[];
+      const q = (s: string) => Array.from(self.selector!(s) as NodeListOf<Element>);
 
-      const blobs = q(".s15-blob");
-      const blobLabels = q(".s15-blob-label");
-      const gridItems = q(".s15-grid-item");
-      const snapLines = q(".s15-snap-line") as SVGLineElement[];
-      const dividerLine = q(".s15-divider")[0];
-      const dividerDot = q(".s15-divider-dot")[0];
-      const tokenBadges = q(".s15-token");
+      const blobs      = q(".s15-blob");
+      const floatLbls  = q(".s15-float-label");
+      const gridItems  = q(".s15-grid-item");
+      const snapLines  = q(".s15-snap-line") as SVGLineElement[];
+      const tokenChips = q(".s15-token-chip");
+      const divLine    = q(".s15-divider-line")[0] as SVGLineElement;
+      const vsBadge    = q(".s15-vs-badge")[0];
 
+      // ── Reduced motion: everything visible, no loops ──────────────────────
       if (reduced) {
-        gsap.set([...blobs, ...blobLabels, ...gridItems, ...tokenBadges, dividerLine, dividerDot], {
+        gsap.set([...blobs, ...floatLbls, ...gridItems, ...tokenChips, vsBadge], {
           opacity: 1, scale: 1, x: 0, y: 0,
         });
-        snapLines.forEach((l) => gsap.set(l, { strokeDashoffset: 0, opacity: 0.3 }));
+        gsap.set(divLine, { strokeDashoffset: 0 });
+        snapLines.forEach((l) => gsap.set(l, { strokeDashoffset: 0, opacity: 0.25 }));
         return;
       }
 
-      // Initial hidden
-      gsap.set(blobs, { opacity: 0, scale: 0.6, transformOrigin: "50% 50%" });
-      gsap.set(blobLabels, { opacity: 0 });
-      gsap.set(gridItems, { opacity: 0, y: -20, scale: 0.85, transformOrigin: "50% 50%" });
-      gsap.set(tokenBadges, { opacity: 0, x: 10 });
-      gsap.set(dividerLine, { scaleY: 0, transformOrigin: "50% 0%" });
-      gsap.set(dividerDot, { opacity: 0, scale: 0 });
+      // ── Initial hidden state ──────────────────────────────────────────────
+      gsap.set(blobs,      { opacity: 0, scale: 0.55, transformOrigin: "50% 50%" });
+      gsap.set(floatLbls,  { opacity: 0, y: 12 });
+      gsap.set(gridItems,  { opacity: 0, y: -18, scale: 0.88, transformOrigin: "50% 50%" });
+      gsap.set(tokenChips, { opacity: 0, x: 14 });
+      gsap.set(vsBadge,    { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" });
+
+      const divLen = divLine.getTotalLength ? divLine.getTotalLength() : H;
+      gsap.set(divLine, { strokeDasharray: divLen, strokeDashoffset: divLen });
       snapLines.forEach((l) => {
-        const len = l.getTotalLength ? l.getTotalLength() : 300;
-        gsap.set(l, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.3 });
+        const len = l.getTotalLength ? l.getTotalLength() : 200;
+        gsap.set(l, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.25 });
       });
 
-      // Intro
+      // ── Intro timeline ────────────────────────────────────────────────────
       const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
       intro
-        .to(dividerLine, { scaleY: 1, duration: 0.65, ease: "power2.inOut" }, 0)
-        .to(dividerDot, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 0.3)
-        .to(blobs, { opacity: 1, scale: 1, duration: 0.55, stagger: 0.1 }, 0.1)
-        .to(blobLabels, { opacity: 1, duration: 0.4, stagger: 0.1 }, 0.5)
-        .to(gridItems, { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.07, ease: "back.out(1.5)" }, 0.3)
-        .to(tokenBadges, { opacity: 1, x: 0, duration: 0.35, stagger: 0.1 }, 0.9);
+        .to(blobs,     { opacity: 1, scale: 1, duration: 0.6, stagger: 0.08 }, 0)
+        .to(floatLbls, { opacity: 1, y: 0,     duration: 0.5, stagger: 0.10 }, 0.35)
+        .to(divLine,   { strokeDashoffset: 0,  duration: 0.7, ease: "power2.inOut" }, 0.1)
+        .to(vsBadge,   { opacity: 1, scale: 1,  duration: 0.5, ease: "back.out(2.2)" }, 0.5)
+        .to(gridItems, { opacity: 1, y: 0, scale: 1, duration: 0.42, stagger: 0.055, ease: "back.out(1.4)" }, 0.45)
+        .to(tokenChips,{ opacity: 1, x: 0,     duration: 0.38, stagger: 0.09 }, 1.1);
 
-      // Sustain loops
+      // ── Sustain loops ─────────────────────────────────────────────────────
       intro.add(() => {
-        // LEFT: blobs drift organically
+
+        // LEFT: blobs drift organically (each blob on its own trajectory)
         blobs.forEach((b, i) => {
-          const angle = (i / blobs.length) * Math.PI * 2;
+          const dx = Math.cos((i / blobs.length) * Math.PI * 2) * 18;
+          const dy = Math.sin((i / blobs.length) * Math.PI * 2) * 12;
+          const rot = (i % 2 === 0 ? 8 : -10);
           gsap.to(b, {
-            x: Math.cos(angle) * 14,
-            y: Math.sin(angle) * 10,
-            rotate: `+=${(i % 2 === 0 ? 6 : -8)}`,
-            duration: 2.4 + i * 0.5,
+            x: dx, y: dy,
+            rotate: `+=${rot}`,
+            duration: 2.8 + i * 0.45,
             ease: "sine.inOut",
             repeat: -1,
             yoyo: true,
           });
         });
 
-        // RIGHT: grid items snap (slight bounce on each, staggered cycle)
-        const snapLoop = () => {
-          gsap.to(gridItems, {
-            y: -4,
-            duration: 0.18,
-            ease: "power2.out",
-            stagger: { each: 0.08, from: "random" },
+        // LEFT: float labels gently pulse opacity
+        floatLbls.forEach((l, i) => {
+          gsap.to(l, {
+            opacity: 0.35,
+            duration: 1.8 + i * 0.3,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+            delay: i * 0.22,
+          });
+        });
+
+        // RIGHT: cycling highlight — visits each grid item in turn, 0.9s each
+        let cycleIdx = 0;
+        function runCycle() {
+          const cur = gridItems[cycleIdx % gridItems.length];
+          // flash this item
+          const tl = gsap.timeline({
             onComplete: () => {
-              gsap.to(gridItems, {
-                y: 0,
-                duration: 0.25,
-                ease: "bounce.out",
-                stagger: { each: 0.08, from: "random" },
-                onComplete: () => {
-                  gsap.delayedCall(2.2, snapLoop);
-                },
-              });
+              cycleIdx++;
+              runCycle();
             },
           });
-        };
-        gsap.delayedCall(0.5, snapLoop);
+          tl.to(cur, { boxShadow: "0 0 0 2px var(--accent), 0 8px 28px -8px rgba(0,113,227,0.55)", scale: 1.07, duration: 0.22, ease: "power2.out" })
+            .to(cur, { boxShadow: "var(--shadow-sm)", scale: 1, duration: 0.55, ease: "power2.inOut" }, 0.28);
+        }
+        gsap.delayedCall(0.3, runCycle);
 
-        // snap lines re-draw
+        // RIGHT: snap lines re-draw (staggered pulse)
         snapLines.forEach((l, i) => {
-          const len = l.getTotalLength ? l.getTotalLength() : 300;
+          const len = l.getTotalLength ? l.getTotalLength() : 200;
           gsap.fromTo(
             l,
             { strokeDashoffset: len },
-            { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut", repeat: -1, repeatDelay: 2.8, delay: i * 0.25 }
+            { strokeDashoffset: 0, duration: 0.65, ease: "power2.inOut", repeat: -1, repeatDelay: 3.5, delay: i * 0.18 }
           );
         });
 
-        // divider dot pulse
-        gsap.to(dividerDot, {
-          boxShadow: "0 0 0 12px rgba(0,113,227,0.18), 0 0 32px rgba(0,113,227,0.35)",
-          scale: 1.15,
-          duration: 1.1,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-
-        // token badges flash in sequence
-        gsap.to(tokenBadges, {
+        // RIGHT: token chips shimmer in sequence
+        gsap.to(tokenChips, {
           background: "rgba(0,113,227,0.22)",
-          duration: 0.4,
+          duration: 0.42,
           ease: "power2.inOut",
           repeat: -1,
           yoyo: true,
-          stagger: { each: 0.4, repeat: -1, from: "start" },
+          stagger: { each: 0.38, from: "start", repeat: -1 },
+        });
+
+        // VS badge: pulse scale + glow
+        gsap.to(vsBadge, {
+          scale: 1.12,
+          boxShadow: "0 0 0 8px rgba(0,113,227,0.16), 0 18px 50px -16px rgba(0,113,227,0.55)",
+          duration: 1.3,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
         });
       });
     }, root);
@@ -169,86 +235,115 @@ export function Slide15Toggle({ active }: { active: boolean }) {
     return () => ctx.revert();
   }, [active]);
 
-  // SVG snap guide lines (right side)
-  const SNAP_LINES = [
-    { x1: GRID_X0 - 10, y1: GRID_Y0, x2: GRID_X0 + GRID_COL_W * 3 + 10, y2: GRID_Y0 },
-    { x1: GRID_X0 - 10, y1: GRID_Y0 + GRID_ROW_H, x2: GRID_X0 + GRID_COL_W * 3 + 10, y2: GRID_Y0 + GRID_ROW_H },
-    { x1: GRID_X0 - 10, y1: GRID_Y0 + GRID_ROW_H * 2, x2: GRID_X0 + GRID_COL_W * 3 + 10, y2: GRID_Y0 + GRID_ROW_H * 2 },
-    { x1: GRID_X0, y1: GRID_Y0 - 10, x2: GRID_X0, y2: GRID_Y0 + GRID_ROW_H * 3 + 10 },
-    { x1: GRID_X0 + GRID_COL_W, y1: GRID_Y0 - 10, x2: GRID_X0 + GRID_COL_W, y2: GRID_Y0 + GRID_ROW_H * 3 + 10 },
-    { x1: GRID_X0 + GRID_COL_W * 2, y1: GRID_Y0 - 10, x2: GRID_X0 + GRID_COL_W * 2, y2: GRID_Y0 + GRID_ROW_H * 3 + 10 },
-  ];
-
-  const TOKEN_LABELS = ["--color-primary", "--spacing-4", "--radius-md"];
-
   return (
-    <div ref={root} style={{ position: "relative", width: W, height: H, margin: "0 auto" }}>
-      {/* SVG layer */}
+    <div
+      ref={root}
+      style={{
+        position: "relative",
+        width: W,
+        height: H,
+        margin: "0 auto",
+      }}
+    >
+      {/* ── SVG layer ──────────────────────────────────────────────────────── */}
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width={W}
         height={H}
-        style={{ position: "absolute", inset: 0, overflow: "visible" }}
+        style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}
         aria-hidden
       >
         <defs>
-          <linearGradient id="s15-divider-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="rgba(0,113,227,0)" />
-            <stop offset="0.3" stopColor="rgba(0,113,227,0.6)" />
-            <stop offset="0.5" stopColor="#0071e3" />
-            <stop offset="0.7" stopColor="rgba(0,113,227,0.6)" />
-            <stop offset="1" stopColor="rgba(0,113,227,0)" />
+          <linearGradient id="s15-div-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"   stopColor="rgba(0,113,227,0)"   />
+            <stop offset="0.2" stopColor="rgba(0,113,227,0.5)" />
+            <stop offset="0.5" stopColor="#0071e3"             />
+            <stop offset="0.8" stopColor="rgba(0,113,227,0.5)" />
+            <stop offset="1"   stopColor="rgba(0,113,227,0)"   />
           </linearGradient>
+          <filter id="s15-blob-blur" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
         </defs>
 
-        {/* Snap guide lines (right side) */}
-        {SNAP_LINES.map((l, i) => (
-          <line
-            key={i}
-            className="s15-snap-line"
-            x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-            stroke="rgba(0,113,227,0.35)"
-            strokeWidth={1}
-            strokeDasharray="5,5"
-          />
-        ))}
-
-        {/* LEFT side blobs */}
+        {/* ── Blobs (left side) ── */}
         {BLOBS.map((b, i) => (
           <ellipse
             key={i}
             className="s15-blob"
-            cx={b.x}
-            cy={b.y}
-            rx={b.rx}
-            ry={b.ry}
-            fill={b.color}
-            stroke="rgba(0,113,227,0.2)"
+            cx={b.cx} cy={b.cy} rx={b.rx} ry={b.ry}
+            fill={b.fill}
+            stroke={b.stroke}
             strokeWidth={1.5}
-            transform={`rotate(${b.rotate}, ${b.x}, ${b.y})`}
+            transform={`rotate(${b.rotate}, ${b.cx}, ${b.cy})`}
+          />
+        ))}
+        {/* soft glow accent circles */}
+        {ACCENT_CIRCLES.map((c, i) => (
+          <circle
+            key={i}
+            className="s15-blob"
+            cx={c.cx} cy={c.cy} r={c.r}
+            fill="rgba(0,113,227,0.20)"
+            filter="url(#s15-blob-blur)"
           />
         ))}
 
-        {/* Small accent circle blobs */}
-        <circle className="s15-blob" cx={260} cy={170} r={28} fill="rgba(0,113,227,0.18)" />
-        <circle className="s15-blob" cx={390} cy={280} r={20} fill="rgba(10,132,255,0.14)" />
+        {/* ── Snap guide lines (right half) ── */}
+        {SNAP_H.map((l, i) => (
+          <line
+            key={`h${i}`}
+            className="s15-snap-line"
+            x1={GX0 - 20} y1={l.y}
+            x2={GX0 + COL_W * COLS + 20} y2={l.y}
+            stroke="rgba(0,113,227,0.30)"
+            strokeWidth={1}
+            strokeDasharray="6 4"
+          />
+        ))}
+        {SNAP_V.map((l, i) => (
+          <line
+            key={`v${i}`}
+            className="s15-snap-line"
+            x1={l.x} y1={GY0 - 20}
+            x2={l.x} y2={GY0 + ROW_H * ROWS + 20}
+            stroke="rgba(0,113,227,0.30)"
+            strokeWidth={1}
+            strokeDasharray="6 4"
+          />
+        ))}
 
-        {/* Divider */}
+        {/* ── Divider line ── */}
         <line
-          className="s15-divider"
-          x1={CX}
-          y1={10}
-          x2={CX}
-          y2={H - 10}
-          stroke="url(#s15-divider-grad)"
+          className="s15-divider-line"
+          x1={CX} y1={12}
+          x2={CX} y2={H - 12}
+          stroke="url(#s15-div-grad)"
           strokeWidth={2.5}
+          strokeLinecap="round"
         />
+
+        {/* ── Float labels (left side, rendered in SVG for transform support) ── */}
+        {FLOAT_LABELS.map((l, i) => (
+          <text
+            key={i}
+            className="s15-float-label"
+            x={l.x}
+            y={l.y}
+            fontFamily="var(--font-display,'Inter'),sans-serif"
+            fontWeight={l.weight}
+            fontSize={l.size}
+            fill={`rgba(0,113,227,${l.alpha})`}
+            letterSpacing="-0.01em"
+          >
+            {l.text}
+          </text>
+        ))}
       </svg>
 
-      {/* RIGHT: Grid items (DOM, for crisp text) */}
-      {GRID_ITEMS.map((item, i) => {
-        const { x, y, w, h, r } = gridItemBounds(item);
-        const isAccent = i % 3 === 0;
+      {/* ── RIGHT: Grid cell items (DOM for crisp text + box-shadow animation) ── */}
+      {GRID_CELLS.map((cell, i) => {
+        const { x, y, w, h, r } = cellGeom(cell);
         return (
           <div
             key={i}
@@ -260,88 +355,143 @@ export function Slide15Toggle({ active }: { active: boolean }) {
               width: w,
               height: h,
               borderRadius: r,
-              background: isAccent
-                ? "linear-gradient(135deg, rgba(0,113,227,0.16), rgba(10,132,255,0.08))"
-                : "linear-gradient(180deg, #fff, #f5f6fb)",
-              border: isAccent ? "1.5px solid rgba(0,113,227,0.28)" : "1px solid var(--line)",
+              background: cell.isAccent
+                ? "linear-gradient(135deg, rgba(0,113,227,0.13), rgba(10,132,255,0.06))"
+                : "linear-gradient(180deg, #ffffff 0%, #f5f6fb 100%)",
+              border: cell.isAccent
+                ? "1.5px solid rgba(0,113,227,0.30)"
+                : "1px solid var(--line)",
               boxShadow: "var(--shadow-sm)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 3,
+              padding: "6px 10px",
             }}
-          />
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-display,'Inter'),sans-serif",
+                fontWeight: 800,
+                fontSize: 22,
+                color: cell.isAccent ? "var(--accent)" : "var(--ink)",
+                letterSpacing: "-0.01em",
+                lineHeight: 1,
+              }}
+            >
+              {cell.label}
+            </span>
+            <span
+              style={{
+                fontFamily: "ui-monospace,'SF Mono',Menlo,monospace",
+                fontSize: 18,
+                fontWeight: 600,
+                color: "var(--muted)",
+                lineHeight: 1,
+                opacity: 0.80,
+              }}
+            >
+              {cell.token}
+            </span>
+          </div>
         );
       })}
 
-      {/* Token badges (right side, bottom) */}
-      {TOKEN_LABELS.map((label, i) => (
-        <div
-          key={label}
-          className="s15-token"
+      {/* ── LEFT: section header ── */}
+      <div
+        style={{
+          position: "absolute",
+          left: 40,
+          top: H - 52,
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <span
           style={{
-            position: "absolute",
-            left: GRID_X0 + i * 148,
-            top: H - 48,
-            background: "rgba(0,113,227,0.10)",
-            border: "1px solid rgba(0,113,227,0.22)",
-            borderRadius: 8,
-            padding: "4px 10px",
-            fontFamily: "ui-monospace,'SF Mono',Menlo,monospace",
-            fontSize: 12,
-            fontWeight: 600,
+            fontFamily: "var(--font-display,'Inter'),sans-serif",
+            fontWeight: 800,
+            fontSize: 20,
+            letterSpacing: "0.10em",
+            textTransform: "uppercase",
             color: "var(--accent)",
-            whiteSpace: "nowrap",
+            opacity: 0.70,
           }}
         >
-          {label}
-        </div>
-      ))}
+          Free-style · Thẩm mỹ tự do
+        </span>
+      </div>
 
-      {/* Divider dot (DOM for box-shadow animation) */}
+      {/* ── RIGHT: section header + token strip ── */}
       <div
-        className="s15-divider-dot"
         style={{
           position: "absolute",
-          left: CX - 14,
-          top: H / 2 - 14,
-          width: 28,
-          height: 28,
+          left: CX + 44,
+          top: H - 52,
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-display,'Inter'),sans-serif",
+            fontWeight: 800,
+            fontSize: 20,
+            letterSpacing: "0.10em",
+            textTransform: "uppercase",
+            color: "var(--accent)",
+            opacity: 0.70,
+          }}
+        >
+          Design System · Token + Snap
+        </span>
+        {TOKEN_STRIP.map((tok) => (
+          <span
+            key={tok}
+            className="s15-token-chip"
+            style={{
+              background: "rgba(0,113,227,0.10)",
+              border: "1px solid rgba(0,113,227,0.24)",
+              borderRadius: 8,
+              padding: "3px 10px",
+              fontFamily: "ui-monospace,'SF Mono',Menlo,monospace",
+              fontSize: 18,
+              fontWeight: 600,
+              color: "var(--accent)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {tok}
+          </span>
+        ))}
+      </div>
+
+      {/* ── CENTER: VS badge ── */}
+      <div
+        className="s15-vs-badge"
+        style={{
+          position: "absolute",
+          left: CX - 28,
+          top: H / 2 - 28,
+          width: 56,
+          height: 56,
           borderRadius: "50%",
           background: "var(--accent)",
+          color: "#fff",
+          fontFamily: "var(--font-display,'Inter'),sans-serif",
+          fontWeight: 800,
+          fontSize: 20,
+          display: "grid",
+          placeItems: "center",
           boxShadow: "0 0 0 6px rgba(0,113,227,0.18), var(--glow-accent)",
-          zIndex: 2,
-        }}
-      />
-
-      {/* LEFT column label */}
-      <div
-        style={{
-          position: "absolute",
-          left: 60,
-          top: H - 32,
-          fontFamily: "var(--font-display,'Inter'),sans-serif",
-          fontWeight: 800,
-          fontSize: 13,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          color: "var(--accent)",
-          opacity: 0.65,
+          zIndex: 10,
+          letterSpacing: "-0.01em",
         }}
       >
-        Free-style · thẩm mỹ tự do
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          left: CX + 60,
-          top: H - 32,
-          fontFamily: "var(--font-display,'Inter'),sans-serif",
-          fontWeight: 800,
-          fontSize: 13,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          color: "var(--accent)",
-          opacity: 0.65,
-        }}
-      >
-        Design System · token + snap
+        VS
       </div>
     </div>
   );

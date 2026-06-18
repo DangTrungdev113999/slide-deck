@@ -5,7 +5,7 @@ export function Slide06({ active }: { active: boolean }) {
   return (
     <SlideFrame index={6} kicker="Antigravity" active={active}>
       {/* headline block */}
-      <div style={{ marginTop: 40 }}>
+      <div style={{ marginTop: 32 }}>
         <span data-reveal style={TYPE.eyebrow}>
           Browser Automation
         </span>
@@ -13,15 +13,24 @@ export function Slide06({ active }: { active: boolean }) {
           Điều khiển Chrome xịn,{" "}
           <span style={{ color: "var(--danger)" }}>nhưng hay tèo</span>
         </h2>
-        <p data-reveal style={{ ...TYPE.lead, marginTop: 16 }}>
-          Antigravity tự động hoá trình duyệt tốt nhất hiện tại.
-          Điểm ổn định đạt{" "}
-          <b style={{ color: "var(--ink)" }}>6/10</b> trong các task phức tạp.
+        <p data-reveal style={{ ...TYPE.lead, marginTop: 14, maxWidth: 860 }}>
+          Antigravity tự động hoá trình duyệt tốt nhất hiện tại —
+          đang chạy task thì nhả response rồi{" "}
+          <b style={{ color: "var(--danger)" }}>tèo</b> giữa chừng.
         </p>
       </div>
 
-      {/* motion graphic */}
-      <div data-reveal style={{ marginTop: "auto", marginBottom: 12 }}>
+      {/* motion graphic — terminal controls browser */}
+      <div
+        data-reveal
+        style={{
+          marginTop: "auto",
+          marginBottom: 0,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <Slide06Browser active={active} />
       </div>
     </SlideFrame>

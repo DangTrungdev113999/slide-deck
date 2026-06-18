@@ -8,10 +8,6 @@ export function Slide02({ active }: { active: boolean }) {
         <h2 data-reveal style={TYPE.h2}>
           Anh em đang xài tool gì?
         </h2>
-
-        <p data-reveal style={{ ...TYPE.lead, marginTop: 18, maxWidth: 700 }}>
-          Vote nhanh — ai dùng cái gì để code hằng ngày?
-        </p>
       </div>
 
       {/* motion-graphic */}
