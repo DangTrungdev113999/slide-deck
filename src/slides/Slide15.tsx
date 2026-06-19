@@ -124,7 +124,7 @@ export function Slide15({ active }: { active: boolean }) {
       </div>
 
       {/* Graphic — fills remaining space */}
-      <div data-reveal style={{ flex: 1, display: "flex", alignItems: "flex-end", paddingBottom: 0, minHeight: 0 }}>
+      <div data-reveal style={{ flex: 1, display: "flex", alignItems: "flex-end", paddingBottom: 72, minHeight: 0 }}>
         <Slide15Toggle active={active} />
       </div>
     </SlideFrame>

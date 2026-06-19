@@ -98,7 +98,6 @@ const PIECE_W = 136;
 const PIECE_H = 58;
 
 // One full animation cycle (seconds) — both zones share the same period
-const CYCLE = 5.2;
 
 export function Slide10SubPlugin({ active }: { active: boolean }) {
   const root = useRef<HTMLDivElement>(null);
@@ -147,8 +146,8 @@ export function Slide10SubPlugin({ active }: { active: boolean }) {
       gsap.set(pieces, { opacity: 0, x: 0, y: 0 });
       gsap.set([...svgForkLines, ...svgMergeLines, ...plLines], { opacity: 0 });
 
-      // ---- Master loop timeline (repeat:-1 → ctx.revert() cleans it up) ----
-      const tl = gsap.timeline({ repeat: -1, defaults: { ease: "power3.out" } });
+      // ---- Single-pass timeline (ctx.revert() still cleans it up) ----
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       /* ===== SUBAGENT zone beats ===== */
 
@@ -191,19 +190,7 @@ export function Slide10SubPlugin({ active }: { active: boolean }) {
       tl.to(bundle, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.7)" }, 1.1);
       tl.to([bundleLabel, bundleIcon], { opacity: 1, duration: 0.3 }, 1.4);
 
-      // 1.7 — pieces merge into box
-      tl.to(pieces, {
-        opacity: 0,
-        scale: 0.3,
-        x: 0,
-        y: 0,
-        duration: 0.38,
-        ease: "power2.in",
-        stagger: 0.06,
-        transformOrigin: "50% 50%",
-      }, 1.7);
-
-      // 2.1 — bundle glows + pulses
+      // 2.1 — bundle glows + pulses (ends at scale 1, rests here)
       tl.to(bundle, {
         boxShadow:
           "0 0 0 6px rgba(0,113,227,.22), 0 20px 70px -14px rgba(0,113,227,.55)",
@@ -213,20 +200,6 @@ export function Slide10SubPlugin({ active }: { active: boolean }) {
         yoyo: true,
         repeat: 2,
       }, 2.1);
-
-      /* ===== Hold at end, then reset for next cycle ===== */
-      // At CYCLE - 0.4 seconds, reset everything
-      tl.set(
-        [coord, mergeNode, bundle, bundleLabel, bundleIcon],
-        { opacity: 0, scale: 0.7 },
-        CYCLE - 0.4
-      );
-      tl.set(cards, { opacity: 0, y: 20 }, CYCLE - 0.4);
-      tl.set(fills, { scaleX: 0 }, CYCLE - 0.4);
-      tl.set(pieces, { opacity: 0, x: 0, y: 0, scale: 1 }, CYCLE - 0.4);
-      tl.set([...svgForkLines, ...svgMergeLines, ...plLines], { opacity: 0 }, CYCLE - 0.4);
-      // Pad to full CYCLE duration
-      tl.to({}, { duration: 0.4 }, CYCLE - 0.4);
     }, root);
 
     return () => ctx.revert();

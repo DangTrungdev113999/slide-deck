@@ -75,8 +75,6 @@ const STEPS = [
 const PKG_MID_Y = PKG_Y + PKG_H / 2;
 
 // ── Animation timing ──────────────────────────────────────────────────────────
-const SKILL_CYCLE = 5.0;
-const HOOK_CYCLE  = 3.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 export function Slide09SkillHook({ active }: { active: boolean }) {
@@ -107,7 +105,7 @@ export function Slide09SkillHook({ active }: { active: boolean }) {
         gsap.set(arrows,             { opacity: 0.5 });
         gsap.set([pkg, pkgLabel],    { opacity: 1, scale: 1 });
         gsap.set(pkgGlow,            { opacity: 0.55 });
-        gsap.set(token,              { opacity: 1, x: 0 });
+        gsap.set(token,              { opacity: 1, x: TOKEN_TRAVEL });
         gsap.set(badge,              { opacity: 1 });
         gsap.set(gateFlash,          { opacity: 0 });
         gsap.set(blockX,             { opacity: 1, scale: 1 });
@@ -126,11 +124,9 @@ export function Slide09SkillHook({ active }: { active: boolean }) {
       gsap.set(blockX,    { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" });
 
       // ══════════════════════════════════════════════════════════════════════
-      //  SKILL TIMELINE — repeat:-1 (StrictMode-safe, fully tracked by ctx)
+      //  SKILL TIMELINE — single pass, no repeat
       // ══════════════════════════════════════════════════════════════════════
       gsap.timeline({
-        repeat: -1,
-        repeatDelay: 0.35,
         defaults: { ease: "power3.out" },
       })
         // Phase 1: cards drop in staggered
@@ -141,42 +137,29 @@ export function Slide09SkillHook({ active }: { active: boolean }) {
         .to(arrows, { opacity: 0.5, duration: 0.3, stagger: 0.08 }, 0.72)
         // Phase 3: reading pause
         .to({}, { duration: 0.9 }, 0.9)
-        // Phase 4: cards collapse into package position
-        .to(cards, {
-          opacity: 0, scale: 0.3, y: 18,
-          transformOrigin: "50% 50%",
-          duration: 0.38, ease: "power2.in", stagger: 0.07,
-        }, 1.65)
-        .to(arrows, { opacity: 0, duration: 0.22 }, 1.65)
-        // Phase 5: package pops
-        .to(pkg, { opacity: 1, scale: 1, duration: 0.44, ease: "back.out(2.0)" }, 2.12)
-        .to(pkgLabel, { opacity: 1, duration: 0.30, ease: "power2.out" }, 2.38)
+        // Phase 4: package pops (cards stay visible alongside package)
+        .to(pkg, { opacity: 1, scale: 1, duration: 0.44, ease: "back.out(2.0)" }, 1.65)
+        .to(pkgLabel, { opacity: 1, duration: 0.30, ease: "power2.out" }, 1.91)
         .to(pkgGlow, {
           opacity: 0.6, scale: 1,
           duration: 0.36, ease: "power2.out",
           transformOrigin: "50% 50%",
-        }, 2.38)
-        // Phase 6: package double-pulse
-        .to(pkg,     { scale: 1.09, duration: 0.28, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.72)
+        }, 1.91)
+        // Phase 5: package double-pulse
+        .to(pkg,     { scale: 1.09, duration: 0.28, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.25)
         .to(pkgGlow, {
           opacity: 0.9, scale: 1.22,
           duration: 0.28, ease: "sine.inOut",
           yoyo: true, repeat: 1, transformOrigin: "50% 50%",
-        }, 2.72)
-        // Phase 7: hold readable
-        .to({}, { duration: 0.96 }, 3.5)
-        // Phase 8: reset for next loop
-        .set(cards,           { opacity: 0, y: -26, scale: 1 }, SKILL_CYCLE - 0.04)
-        .set([pkg, pkgLabel], { opacity: 0, scale: 0.72 },       SKILL_CYCLE - 0.04)
-        .set(pkgGlow,         { opacity: 0, scale: 0.6 },         SKILL_CYCLE - 0.04)
-        .set(arrows,          { opacity: 0 },                      SKILL_CYCLE - 0.04);
+        }, 2.25)
+        // Phase 6: hold readable (rests here — cards + package + arrows all visible)
+        .to({}, { duration: 0.96 }, 3.0);
 
       // ══════════════════════════════════════════════════════════════════════
-      //  HOOK TIMELINE — repeat:-1 (StrictMode-safe)
+      //  HOOK TIMELINE — single pass, no repeat
+      //  Final state: token stopped at gate, blockX + badge visible (blocked)
       // ══════════════════════════════════════════════════════════════════════
       gsap.timeline({
-        repeat: -1,
-        repeatDelay: 0.45,
         defaults: { ease: "power2.inOut" },
       })
         // Phase 0: badge fades in (shows "chưa verify →")
@@ -188,26 +171,14 @@ export function Slide09SkillHook({ active }: { active: boolean }) {
         .to(gateFlash, { opacity: 0,   duration: 0.18, ease: "power2.out" }, 0.99)
         .to(gateFlash, { opacity: 0.8, duration: 0.07, ease: "none" }, 1.24)
         .to(gateFlash, { opacity: 0,   duration: 0.22, ease: "power2.out" }, 1.31)
-        // Phase 3: block X appears
+        // Phase 3: block X appears — rests here (token blocked at gate)
         .to(blockX, {
           opacity: 1, scale: 1,
           duration: 0.24, ease: "back.out(2.4)",
           transformOrigin: "50% 50%",
         }, 0.92)
-        // Phase 4: token bounces back
-        .to(token, { x: -22, duration: 0.30, ease: "back.out(2.6)" }, 1.02)
-        .to(token, { x: 0,   duration: 0.33, ease: "power2.out" },    1.32)
-        // Phase 5: block X fades
-        .to(blockX, {
-          opacity: 0, scale: 0.4,
-          duration: 0.26, ease: "power2.in",
-          transformOrigin: "50% 50%",
-        }, 1.30)
-        // Phase 6: pause
-        .to({}, { duration: 0.82 })
-        // Phase 7: reset
-        .set(badge, { opacity: 0 }, HOOK_CYCLE - 0.04)
-        .set(token, { x: 0 },       HOOK_CYCLE - 0.04);
+        // Phase 4: hold in blocked state (final resting state)
+        .to({}, { duration: 0.82 });
 
     }, root);
 
