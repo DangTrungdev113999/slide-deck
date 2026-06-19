@@ -256,7 +256,7 @@ export function WorkflowDiagram({ active, steps }: { active: boolean; steps: Flo
             >
               {TYPE_META[spot.type].glyph} {spot.label}
             </span>
-            <span style={{ fontFamily: "var(--font-body),sans-serif", fontSize: 22, lineHeight: 1.4, color: "var(--ink-soft)", maxWidth: 1320 }}>
+            <span style={{ fontFamily: "var(--font-body),sans-serif", fontSize: 44, lineHeight: 1.35, color: "var(--ink-soft)", maxWidth: 1320 }}>
               {spot.task}
             </span>
           </>
