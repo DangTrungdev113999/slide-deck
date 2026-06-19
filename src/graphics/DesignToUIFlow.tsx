@@ -53,7 +53,7 @@ type Stage = {
 const STAGES: Stage[] = [
   { id: "select", glyph: AGENT.glyph, border: AGENT.border, textColor: AGENT.text, bg: AGENT.fill, name: "select-component", caption: "Subagent quét design Figma, quyết định dùng những component base nào." },
   { id: "gate1", glyph: GATE.glyph, border: GATE.border, textColor: GATE.text, bg: GATE.fill, name: "gate · review", caption: "Gate: người dùng xác nhận danh sách component sẽ dùng trước khi dựng." },
-  { id: "map", glyph: SKILL.glyph, border: SKILL.border, textColor: SKILL.text, bg: SKILL.fill, name: "mapping-combase", caption: "Skill registry sống: định nghĩa mọi component base + ghi chú khi nào dùng." },
+  { id: "map", glyph: SKILL.glyph, border: SKILL.border, textColor: SKILL.text, bg: SKILL.fill, name: "figma to code", caption: "Skill registry sống: định nghĩa mọi component base + ghi chú khi nào dùng." },
   { id: "build", glyph: SKILL.glyph, border: SKILL.border, textColor: SKILL.text, bg: SKILL.fill, name: "build-com", caption: "Thiếu component? Skill build mới theo convention rồi nạp NGƯỢC vào registry." },
   { id: "buildui", glyph: AGENT.glyph, border: AGENT.border, textColor: AGENT.text, bg: AGENT.fill, name: "build-UI", caption: "Subagent ráp UI từ component base + design token, đúng convention." },
   { id: "out", glyph: OUTPUT.glyph, border: OUTPUT.border, textColor: OUTPUT.text, bg: OUTPUT.fill, name: "UI chuẩn", caption: "Gate so khớp với Figma → Figma và UI render giống hệt nhau (same same)." },
@@ -397,7 +397,7 @@ export function DesignToUIFlow({ active }: { active: boolean }) {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
           <Glyph cfg={SKILL} />
-          <span style={{ fontFamily: FONT_D, fontWeight: 800, fontSize: 23, color: SKILL.text, letterSpacing: "-0.01em" }}>mapping-combase</span>
+          <span style={{ fontFamily: FONT_D, fontWeight: 800, fontSize: 23, color: SKILL.text, letterSpacing: "-0.01em" }}>figma to code</span>
           <span style={{ marginLeft: "auto", fontFamily: FONT_B, fontSize: 20, color: "var(--muted)" }}>registry</span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
