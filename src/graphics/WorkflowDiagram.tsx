@@ -199,12 +199,12 @@ export function WorkflowDiagram({ active, steps }: { active: boolean; steps: Flo
         {steps.map((step, si) => (
           <div key={si} style={{ display: "flex", alignItems: "center", flex: "0 1 auto", minWidth: 0 }}>
             {step.parallel ? (
-              <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 12, padding: "0 4px", transform: "translateY(-26px)" }}>
+              <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 12, padding: "58px 4px 0" }}>
                 {step.tag && (
                   <span
                     style={{
                       position: "absolute",
-                      top: -48,
+                      top: 6,
                       left: "50%",
                       transform: "translateX(-50%)",
                       whiteSpace: "nowrap",

@@ -80,13 +80,10 @@ export function Slide17({ active }: { active: boolean }) {
         </p>
       </div>
 
-      <div data-reveal style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", marginTop: 8 }}>
+      <div data-reveal style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-start", marginTop: 40 }}>
         <WorkflowDiagram active={active} steps={STEPS} />
       </div>
 
-      <div data-reveal style={{ textAlign: "center", marginBottom: 6, fontFamily: "var(--font-display,'Inter'),sans-serif", fontWeight: 700, fontSize: 16, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--muted)" }}>
-        Cảm ơn · Q&amp;A
-      </div>
     </SlideFrame>
   );
 }
