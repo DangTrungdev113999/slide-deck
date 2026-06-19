@@ -156,11 +156,12 @@ export function Slide09SkillHook({ active }: { active: boolean }) {
         .to({}, { duration: 0.96 }, 3.0);
 
       // ══════════════════════════════════════════════════════════════════════
-      //  HOOK TIMELINE — single pass, no repeat
-      //  Final state: token stopped at gate, blockX + badge visible (blocked)
+      //  HOOK TIMELINE — LOOPS (git push → blocked by gate → bounce back → repeat)
       // ══════════════════════════════════════════════════════════════════════
       gsap.timeline({
         defaults: { ease: "power2.inOut" },
+        repeat: -1,
+        repeatDelay: 0.5,
       })
         // Phase 0: badge fades in (shows "chưa verify →")
         .to(badge, { opacity: 1, duration: 0.28, ease: "power2.out" }, 0.15)
@@ -177,8 +178,11 @@ export function Slide09SkillHook({ active }: { active: boolean }) {
           duration: 0.24, ease: "back.out(2.4)",
           transformOrigin: "50% 50%",
         }, 0.92)
-        // Phase 4: hold in blocked state (final resting state)
-        .to({}, { duration: 0.82 });
+        // Phase 4: hold in blocked state
+        .to({}, { duration: 0.82 })
+        // Phase 5: reset for the loop — token bounces back, block X fades out
+        .to(token, { x: 0, duration: 0.42, ease: "back.out(1.3)" })
+        .to(blockX, { opacity: 0, scale: 0.4, duration: 0.3 }, "<");
 
     }, root);
 
