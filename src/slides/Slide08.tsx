@@ -6,10 +6,7 @@ export function Slide08({ active }: { active: boolean }) {
     <SlideFrame index={8} kicker="Harness" active={active}>
       {/* Headline block — compact so diagram fills the lower zone */}
       <div style={{ marginTop: 32 }}>
-        <span data-reveal style={TYPE.eyebrow}>
-          Kiến trúc Agent
-        </span>
-        <h2 data-reveal style={{ ...TYPE.h2, marginTop: 8 }}>
+        <h2 data-reveal style={{ ...TYPE.h2, marginTop: 0 }}>
           Tay chân của{" "}
           <span style={{ color: "var(--accent)" }}>Agent</span>
         </h2>

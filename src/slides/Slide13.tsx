@@ -16,7 +16,6 @@ export function Slide13({ active }: { active: boolean }) {
           <b style={{ color: "var(--ink)" }}>UI/UX</b>
           {" "}+{" "}
           <b style={{ color: "var(--ink)" }}>Logic business</b>.
-          {" "}Mỗi mặt trận cần cách dùng AI khác nhau.
         </p>
       </div>
 
