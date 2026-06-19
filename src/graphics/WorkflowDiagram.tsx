@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 
 /**
@@ -20,6 +21,7 @@ export interface FlowNode {
   label: string; // short name shown on the node
   task: string; // tooltip + caption text
   badge?: string; // command chip / "×N · song song"
+  video?: string; // optional: a small "play" chip above the node → opens a popup
 }
 
 export interface FlowStep {
@@ -137,6 +139,8 @@ export function WorkflowDiagram({ active, steps }: { active: boolean; steps: Flo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
+  const [playing, setPlaying] = useState<string | null>(null);
+
   const enter = (id: string) => {
     hoverRef.current = id;
     setHoverId(id);
@@ -195,18 +199,36 @@ export function WorkflowDiagram({ active, steps }: { active: boolean; steps: Flo
         {steps.map((step, si) => (
           <div key={si} style={{ display: "flex", alignItems: "center", flex: "0 1 auto", minWidth: 0 }}>
             {step.parallel ? (
-              <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 12, padding: "0 4px" }}>
+              <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 12, padding: "0 4px", transform: "translateY(-26px)" }}>
                 {step.tag && (
-                  <span style={{ position: "absolute", top: -30, left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", fontFamily: "var(--font-display),sans-serif", fontWeight: 800, fontSize: 16, letterSpacing: "0.04em", color: "var(--accent)" }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -48,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      whiteSpace: "nowrap",
+                      fontFamily: "var(--font-display),sans-serif",
+                      fontWeight: 800,
+                      fontSize: 21,
+                      letterSpacing: "0.01em",
+                      color: "var(--accent-700)",
+                      background: "var(--accent-soft)",
+                      border: "1.5px solid rgba(0,113,227,.25)",
+                      borderRadius: 999,
+                      padding: "6px 16px",
+                      boxShadow: "var(--shadow-sm)",
+                    }}
+                  >
                     {step.tag}
                   </span>
                 )}
                 {step.nodes.map((n) => (
-                  <NodeCard key={n.id} node={n} lit={spotId === n.id} onEnter={enter} onLeave={leave} invScale={1 / fit.scale} compact />
+                  <NodeCard key={n.id} node={n} lit={spotId === n.id} onEnter={enter} onLeave={leave} onPlay={setPlaying} invScale={1 / fit.scale} compact />
                 ))}
               </div>
             ) : (
-              <NodeCard node={step.nodes[0]} lit={spotId === step.nodes[0].id} onEnter={enter} onLeave={leave} invScale={1 / fit.scale} />
+              <NodeCard node={step.nodes[0]} lit={spotId === step.nodes[0].id} onEnter={enter} onLeave={leave} onPlay={setPlaying} invScale={1 / fit.scale} />
             )}
             {si < steps.length - 1 && <Chevron />}
           </div>
@@ -244,7 +266,71 @@ export function WorkflowDiagram({ active, steps }: { active: boolean; steps: Flo
           </span>
         )}
       </div>
+
+      {playing && <VideoPopup src={playing} onClose={() => setPlaying(null)} />}
     </div>
+  );
+}
+
+/** Full-screen video popup, portalled to <body> so it escapes the Stage's scale transform. */
+function VideoPopup({ src, onClose }: { src: string; onClose: () => void }) {
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        background: "rgba(12,16,28,.72)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        animation: "wfFade .22s ease",
+      }}
+    >
+      <style>{`@keyframes wfFade{from{opacity:0}to{opacity:1}}@keyframes wfRise{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}`}</style>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: "relative",
+          height: "88vh",
+          maxWidth: "94vw",
+          borderRadius: 22,
+          overflow: "hidden",
+          boxShadow: "0 40px 120px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.08)",
+          background: "#000",
+          animation: "wfRise .28s cubic-bezier(.2,.8,.2,1)",
+        }}
+      >
+        <video src={src} controls autoPlay playsInline style={{ display: "block", height: "100%", width: "auto", maxWidth: "94vw" }} />
+      </div>
+      <button
+        onClick={onClose}
+        aria-label="Đóng"
+        style={{
+          position: "fixed",
+          top: 28,
+          right: 32,
+          width: 52,
+          height: 52,
+          borderRadius: 999,
+          border: "1px solid rgba(255,255,255,.25)",
+          background: "rgba(255,255,255,.12)",
+          color: "#fff",
+          fontSize: 26,
+          fontWeight: 700,
+          cursor: "pointer",
+          display: "grid",
+          placeItems: "center",
+          backdropFilter: "blur(6px)",
+        }}
+      >
+        ✕
+      </button>
+    </div>,
+    document.body
   );
 }
 
@@ -253,6 +339,7 @@ function NodeCard({
   lit,
   onEnter,
   onLeave,
+  onPlay,
   invScale = 1,
   compact,
 }: {
@@ -260,6 +347,7 @@ function NodeCard({
   lit: boolean;
   onEnter: (id: string) => void;
   onLeave: () => void;
+  onPlay?: (src: string) => void;
   invScale?: number;
   compact?: boolean;
 }) {
@@ -278,6 +366,56 @@ function NodeCard({
         setShow(false);
       }}
     >
+      {/* small video chip — sits above the node, click → popup */}
+      {node.video && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onPlay?.(node.video!);
+          }}
+          aria-label="Xem video demo"
+          style={{
+            position: "absolute",
+            bottom: "calc(100% + 12px)",
+            left: "50%",
+            transform: `translateX(-50%) scale(${invScale})`,
+            transformOrigin: "bottom center",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 14px 8px 10px",
+            borderRadius: 999,
+            border: "none",
+            cursor: "pointer",
+            background: "linear-gradient(135deg,var(--accent),var(--accent-700))",
+            color: "#fff",
+            fontFamily: "var(--font-display),sans-serif",
+            fontWeight: 800,
+            fontSize: 15,
+            whiteSpace: "nowrap",
+            boxShadow: "0 10px 26px -8px rgba(0,113,227,.7)",
+            zIndex: 12,
+            animation: "wfPlayPulse 1.8s ease-in-out infinite",
+          }}
+        >
+          <style>{`@keyframes wfPlayPulse{0%,100%{box-shadow:0 10px 26px -8px rgba(0,113,227,.7)}50%{box-shadow:0 10px 30px -6px rgba(0,113,227,.95)}}`}</style>
+          <span
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 999,
+              background: "rgba(255,255,255,.22)",
+              display: "grid",
+              placeItems: "center",
+              fontSize: 11,
+              paddingLeft: 2,
+            }}
+          >
+            ▶
+          </span>
+          Xem video
+        </button>
+      )}
       <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "var(--font-display),sans-serif", fontWeight: 800, fontSize: compact ? 21 : 23, letterSpacing: "-0.01em" }}>
         <span style={{ opacity: 0.85, fontSize: compact ? 16 : 18 }}>{m.glyph}</span>
         {node.label}

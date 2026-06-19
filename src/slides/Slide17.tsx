@@ -43,7 +43,7 @@ const STEPS: FlowStep[] = [
   },
   {
     nodes: [
-      { id: "render", type: "skill", label: "Render MP4", task: "remotion render ra MP4 (voice + BGM baked in), verify audio không bị câm." },
+      { id: "render", type: "skill", label: "Render MP4", task: "remotion render ra MP4 (voice + BGM baked in), verify audio không bị câm.", video: import.meta.env.BASE_URL + "tap-2.mp4" },
     ],
   },
   {
